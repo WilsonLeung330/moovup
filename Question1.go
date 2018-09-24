@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 )
+
 func main() {
 	graph := make(map[string][]string)
 
@@ -17,7 +18,7 @@ func main() {
 	var path []string
 
 	fmt.Println("AllPossiblePath:")
-	AllPossiblePath(graph, "A", "H", path)
+	fmt.Println(AllPossiblePath(graph, "A", "H", path))
 	fmt.Println("ShortestPath:")
 	fmt.Println(ShortestPath(graph, "A", "H", path))
 
@@ -32,22 +33,29 @@ func stringInSlice(a string, list []string) bool {
 	return false
 }
 
-
-func AllPossiblePath(graph map[string][]string, start string, end string, path []string) {
+func AllPossiblePath(graph map[string][]string, start string, end string, path []string) [][]string {
 	path = append(path, start)
 
+	var paths [][]string
 	if start == end {
-		fmt.Println(path)
+		tmp := make([]string, len(path))
+		copy(tmp, path)
+		paths = append(paths, tmp)
+		return paths
 	}
 
-	for _, node := range graph[start]{
+	for _, node := range graph[start] {
 		if !stringInSlice(node, path) {
-			AllPossiblePath(graph, node, end, path)
+			var newpaths = AllPossiblePath(graph, node, end, path)
+			for _, newpath := range newpaths {
+				paths = append(paths, newpath)
+			}
 		}
 	}
+	return paths
 }
 
-func ShortestPath(graph map[string][]string, start string, end string, path []string) ([]string) {
+func ShortestPath(graph map[string][]string, start string, end string, path []string) []string {
 	var shortest []string
 	path = append(path, start)
 
@@ -55,11 +63,11 @@ func ShortestPath(graph map[string][]string, start string, end string, path []st
 		return path
 	}
 
-	for _, node := range graph[start]{
+	for _, node := range graph[start] {
 		if !stringInSlice(node, path) {
-			var newPath  []string
+			var newPath []string
 			newPath = ShortestPath(graph, node, end, path)
-			if len(shortest) == 0 || len(newPath) < len(shortest){
+			if len(shortest) == 0 || len(newPath) < len(shortest) {
 				shortest = newPath
 			}
 		}
@@ -67,5 +75,3 @@ func ShortestPath(graph map[string][]string, start string, end string, path []st
 
 	return shortest
 }
-
-
